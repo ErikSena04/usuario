@@ -6,6 +6,7 @@ import com.javanauta.usuario.infrastructure.entity.Usuario;
 import com.javanauta.usuario.infrastructure.exceptions.ConflictException;
 import com.javanauta.usuario.infrastructure.exceptions.ResourceNotFoundException;
 import com.javanauta.usuario.infrastructure.repository.UsuarioRepository;
+import com.javanauta.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioConverter usuarioConverter;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public UsuarioDTO salvaUsuario(UsuarioDTO usuarioDTO) {
         emailExiste(usuarioDTO.getEmail());
@@ -26,6 +28,7 @@ public class UsuarioService {
         return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
 
     }
+
     public void emailExiste(String email) {
         try {
             boolean existe = verificaEmailExistente(email);
@@ -41,14 +44,26 @@ public class UsuarioService {
         return usuarioRepository.existsByEmail(email);
     }
 
-    public Usuario buscarUsuarioPorEmail(String email){
+    public Usuario buscarUsuarioPorEmail(String email) {
         return usuarioRepository.findByEmail(email).orElseThrow(
                 () -> new ResourceNotFoundException("Email não encontrado" + email));
     }
 
-    public void deletaUsuarioPorEmail(String email){
+    public void deletaUsuarioPorEmail(String email) {
         usuarioRepository.deleteByEmail(email);
     }
 
+    public UsuarioDTO atualizarDadosUsuario(String token, UsuarioDTO dto) {
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
 
+        dto.setSenha(dto.getSenha() != null ? passwordEncoder.encode(dto.getSenha()) : null);
+
+        Usuario usuarioEntity = usuarioRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email não encontrado"));
+        Usuario usuario = usuarioConverter.updateUsuario(dto, usuarioEntity);
+        usuario.setSenha(passwordEncoder.encode(usuario.getPassword()));
+
+        return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
+    }
 }
+
