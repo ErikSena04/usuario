@@ -1,7 +1,10 @@
 package com.eriksena.usuario.controller;
 
 import com.eriksena.usuario.business.UsuarioService;
+import com.eriksena.usuario.business.dtos.EnderecoDTO;
+import com.eriksena.usuario.business.dtos.TelefoneDTO;
 import com.eriksena.usuario.business.dtos.UsuarioDTO;
+import com.eriksena.usuario.infrastructure.entity.Endereco;
 import com.eriksena.usuario.infrastructure.entity.Usuario;
 import com.eriksena.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +39,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<Usuario> buscaUsuarioPorEmail(@RequestParam("email") String email) {
+    public ResponseEntity<UsuarioDTO> buscaUsuarioPorEmail(@RequestParam("email") String email) {
         return ResponseEntity.ok(usuarioService.buscaUsuarioPorEmail(email));
     }
 
@@ -50,5 +53,17 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDTO> atualizaUsuario(@RequestBody UsuarioDTO usuarioDTO,
                                                       @RequestHeader("Authorization") String token){
         return ResponseEntity.ok(usuarioService.atualizaDadosUsuario(token, usuarioDTO));
+    }
+
+    @PutMapping("/endereco")
+    public ResponseEntity<EnderecoDTO> atualizaEndereco(@RequestBody EnderecoDTO enderecoDTO,
+                                                     @RequestParam("id") Long id){
+        return ResponseEntity.ok(usuarioService.atualizaEndereco(id, enderecoDTO));
+    }
+
+    @PutMapping("/telefone")
+    public ResponseEntity<TelefoneDTO> atualizaTelefone(@RequestBody TelefoneDTO telefoneDTO,
+                                                        @RequestParam("id") Long id){
+        return ResponseEntity.ok(usuarioService.atualizaTelefone(id, telefoneDTO));
     }
 }
