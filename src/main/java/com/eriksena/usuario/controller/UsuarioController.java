@@ -4,8 +4,6 @@ import com.eriksena.usuario.business.UsuarioService;
 import com.eriksena.usuario.business.dtos.EnderecoDTO;
 import com.eriksena.usuario.business.dtos.TelefoneDTO;
 import com.eriksena.usuario.business.dtos.UsuarioDTO;
-import com.eriksena.usuario.infrastructure.entity.Endereco;
-import com.eriksena.usuario.infrastructure.entity.Usuario;
 import com.eriksena.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -50,8 +48,8 @@ public class UsuarioController {
     }
 
     @PutMapping
-    public ResponseEntity<UsuarioDTO> atualizaUsuario(@RequestBody UsuarioDTO usuarioDTO,
-                                                      @RequestHeader("Authorization") String token){
+    public ResponseEntity<UsuarioDTO> atualizaDadosUsuario(@RequestBody UsuarioDTO usuarioDTO,
+                                                           @RequestHeader("Authorization") String token){
         return ResponseEntity.ok(usuarioService.atualizaDadosUsuario(token, usuarioDTO));
     }
 
